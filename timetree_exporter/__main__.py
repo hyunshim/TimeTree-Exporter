@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 package_logger = logging.getLogger(__package__)
 
 
-def get_events(email: str, password: str):
+def get_events(email: str, password: str, args=None):
     """Get events from the Timetree API."""
     session_id = login(email, password)
     calendar = TimeTreeCalendar(session_id)
@@ -36,7 +36,7 @@ def get_events(email: str, password: str):
         print(f"{i+1}. {metadata['name'] if metadata['name'] else 'Unnamed'}")
 
     # Ask the user to choose a calendar
-    if args.calendar is None:
+    if not args or args.calendar is None:
         calendar_num = (
             input("Which Calendar do you want to export? (Default to 1): ") or "1"
         )
@@ -105,7 +105,7 @@ def main():
         package_logger.setLevel(logging.DEBUG)
 
     cal = Calendar()
-    events = get_events(email, password)
+    events = get_events(email, password, args)
 
     logger.info("Found %d events", len(events))
 
