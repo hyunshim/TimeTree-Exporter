@@ -36,9 +36,12 @@ def get_events(email: str, password: str):
         print(f"{i+1}. {metadata['name'] if metadata['name'] else 'Unnamed'}")
 
     # Ask the user to choose a calendar
-    calendar_num = (
-        input("Which Calendar do you want to export? (Default to 1): ") or "1"
-    )
+    if args.calendar is None:
+        calendar_num = (
+            input("Which Calendar do you want to export? (Default to 1): ") or "1"
+        )
+    else:
+        calendar_num = args.calendar
     if not calendar_num.isdigit() or not 1 <= int(calendar_num) <= len(metadatas):
         raise ValueError(
             f"Invalid Calendar Number. Must be a number between 1 and {len(metadatas)}"
@@ -84,13 +87,18 @@ def main():
         action="version",
         version=f"%(prog)s {__version__}",
     )
+    parser.add_argument(
+        "--calendar",
+        type=str,
+        default=None
+    )
     args = parser.parse_args()
 
     if args.email is None:
-        email = input("Enter your email address: ")
+        email = os.getenv("TIMETREE_EMAIL") or input("Enter your email address: ")
     else:
         email = args.email
-    password = getpass("Enter your password: ")
+    password = os.getenv("TIMETREE_PASSWORD") or getpass("Enter your password: ")
 
     # Set logging level
     if args.verbose:
